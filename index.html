@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoMap SIG Explorer - Media Pembelajaran Interaktif Geografi Kelas XI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+        }
+        
+        /* Smooth Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+
+        /* Landscape Container Lock Ratio Option & Glow Effects */
+        .landscape-aspect {
+            aspect-ratio: 16 / 9;
+        }
+
+        .gis-grid-bg {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+        }
+
+        .glow-emerald {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.3);
+        }
+
+        .slide-enter {
+            background-image: linear-gradient(rgba(12, 18, 32, 0.55), rgba(12, 18, 32, 0.72)), url('asets/yuhu.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: fadeInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+        }
+
+        #slide-1 {
+            background-image: linear-gradient(rgba(12, 18, 32, 0.48), rgba(12, 18, 32, 0.66)), url('asets/yuyun.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .slide-enter::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(14, 116, 144, 0.12), rgba(17, 24, 39, 0.08), rgba(34, 197, 94, 0.10));
+            pointer-events: none;
+        }
+
+        .slide-enter > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        #slide-1 > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-enter .bg-slate-950,
+        .slide-enter .bg-slate-950\/70,
+        .slide-enter .bg-slate-900,
+        .slide-enter .bg-slate-900\/90 {
+            background-color: rgba(15, 23, 42, 0.76) !important;
+            border-color: rgba(148, 163, 184, 0.24) !important;
+            box-shadow: 0 10px 25px rgba(2, 6, 23, 0.25);
+            backdrop-filter: blur(2px);
+        }
+
+        [class*="bg-slate-950"],
+        [class*="bg-slate-900"],
+        [class*="bg-slate-800"] {
+            background-color: rgba(15, 23, 42, 0.45) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        [class*="border-slate-800"],
+        [class*="border-slate-700"] {
+            border-color: rgba(148, 163, 184, 0.22) !important;
+        }
+
+        .title-float {
+            animation: floatTitle 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes floatTitle {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* Printable Area Custom Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate-print-area, #certificate-print-area * {
+                visibility: visible;
+            }
+            #certificate-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none !important;
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* Custom Cursor */
+        * {
+            cursor: url('asets/tangan-cursor.png') 18 2, auto;
+        }
+
+        body, button, a, [onclick], .cursor-pointer, .draggable-item {
+            cursor: url('asets/tangan-cursor.png') 18 2, auto;
+        }
+
+        #certificate-print-area {
+            background: linear-gradient(135deg, rgba(238, 246, 249, 0.98), rgba(219, 234, 254, 0.96), rgba(236, 253, 245, 0.97)) !important;
+            border: 4px double rgba(14, 116, 144, 0.7) !important;
+            color: #0f172a !important;
+            box-shadow: 0 18px 40px rgba(8, 47, 73, 0.14) !important;
+        }
+
+        #certificate-print-area h3,
+        #certificate-print-area p,
+        #certificate-print-area span {
+            color: inherit;
+        }
+
+        #certificate-print-area #cert-id {
+            color: #0f766e !important;
+        }
+
+        #certificate-print-area #cert-student-name {
+            background-image: linear-gradient(90deg, #1e293b 0%, #0f766e 35%, #0f766e 100%) !important;
+            color: transparent !important;
+        }
+
+        #certificate-print-area #cert-final-score {
+            color: #0f766e !important;
+        }
+
+        #certificate-print-area #cert-grade {
+            color: #0f766e !important;
+        }
+
+        /* Drag & Drop Visual Styles */
+        .draggable-item {
+            touch-action: none;
+            cursor: url('asets/tangan-cursor.png') 18 2, grab;
+        }
+        .draggable-item:active {
+            cursor: url('asets/tangan-cursor.png') 18 2, grabbing;
+        }
+        .drop-zone.drag-over {
+            border-color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.15);
+        }
+
+        .glass-field,
+        #input-name,
+        #input-class,
+        #input-school {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.7), rgba(14, 116, 144, 0.18));
+            border: 1px solid rgba(125, 211, 252, 0.28);
+            color: #dbeafe;
+            box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.08);
+        }
+
+        .glass-field::placeholder,
+        #input-name::placeholder,
+        #input-school::placeholder {
+            color: rgba(148, 163, 184, 0.8);
+        }
+
+        .glass-field:focus,
+        #input-name:focus,
+        #input-class:focus,
+        #input-school:focus {
+            border-color: rgba(45, 212, 191, 0.8);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12), inset 0 0 0 1px rgba(125, 211, 252, 0.08);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.78), rgba(8, 145, 178, 0.14));
+            color: #f0f9ff;
+            outline: none;
+        }
+
+        #input-class option {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden gis-grid-bg">
+
+    <!-- Top Navigation & Control Bar -->
+    <header class="no-print bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 border border-slate-700 shadow-lg shadow-cyan-500/10">
+                    <img src="asets/logoo.webp" alt="Logo GeoMap" class="h-full w-full object-cover">
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 text-lg leading-tight">
+                        GeoMap SIG Explorer
+                    </h1>
+                    <p class="text-xs text-slate-400">Geografi Kelas XI • Fase F High-School Edition</p>
+                </div>
+            </div>
+
+            <!-- Slide Indicator Bar -->
+            <div class="hidden md:flex items-center gap-2 bg-slate-950/60 px-4 py-1.5 rounded-full border border-slate-800 text-xs">
+                <span id="step-1-dot" class="w-3 h-3 rounded-full bg-cyan-400 transition-all"></span>
+                <span id="step-2-dot" class="w-3 h-3 rounded-full bg-slate-700 transition-all"></span>
+                <span id="step-3-dot" class="w-3 h-3 rounded-full bg-slate-700 transition-all"></span>
+                <span id="step-4-dot" class="w-3 h-3 rounded-full bg-slate-700 transition-all"></span>
+                <span id="step-5-dot" class="w-3 h-3 rounded-full bg-slate-700 transition-all"></span>
+                <span id="step-6-dot" class="w-3 h-3 rounded-full bg-slate-700 transition-all"></span>
+                <span id="step-7-dot" class="w-3 h-3 rounded-full bg-slate-700 transition-all"></span>
+                <span id="slide-number-display" class="ml-2 font-mono font-bold text-cyan-400">Slide 1/7</span>
+            </div>
+
+            <!-- User Info Badge & Sound Toggle -->
+            <div class="flex items-center gap-3">
+                <div id="user-badge" class="hidden items-center gap-2 bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full text-xs text-slate-300">
+                    <i class="fa-solid fa-user-astronaut text-cyan-400"></i>
+                    <span id="badge-student-name" class="font-semibold truncate max-w-[120px]">Siswa</span>
+                </div>
+                <button id="sound-btn" onclick="toggleAudio()" title="Efek Suara Audio" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 flex items-center justify-center transition">
+                    <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Interactive Presentation Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 md:p-6 flex flex-col justify-center">
+        
+        <!-- Toast Notification Box -->
+        <div id="toast-msg" class="fixed top-20 right-5 z-50 hidden bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 transition-all duration-300 transform translate-x-full">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-xl"></i>
+            <span id="toast-text" class="text-sm font-semibold">Pesan Notifikasi</span>
+        </div>
+
+        <!-- Dynamic Slide Wrapper -->
+        <div class="bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden min-h-[560px] flex flex-col justify-between">
+
+            <!-- SLIDE 1: JUDUL & IDENTITAS MATA PELAJARAN -->
+            <section id="slide-1" class="slide-enter p-6 md:p-12 flex flex-col justify-between h-full min-h-[540px]">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8 my-auto">
+                    <div class="flex-1 space-y-6 text-center md:text-left">
+                        <h2 class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight text-center">
+                            <span class="title-float">Sistem Informasi</span> <br>
+                            <span class="title-float text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400">
+                                Geografis
+                            </span>
+                        </h2>
+                        <p class="text-slate-300 text-sm md:text-base max-w-xl leading-relaxed">
+                            Jelajahi dunia modern, pahami prinsip dasar pemetaan komputer, simulasi tumpang susun layer data, dan selesaikan tantangan gim interaktif!
+                        </p>
+
+
+                    </div>
+
+                    <!-- Visual Hero Interactive Globe Graphic -->
+                    <div class="flex-1 flex justify-center items-center relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-tr from-cyan-600/30 via-emerald-600/20 to-transparent absolute animate-pulse"></div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-800 flex justify-end">
+                    <button onclick="changeSlide(2)" class="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center gap-3 transition transform hover:scale-105 active:scale-95">
+                        <span>Mulai Petualangan</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: INPUT IDENTITAS MURID -->
+            <section id="slide-2" class="slide-enter p-6 md:p-12 hidden flex-col justify-between h-full min-h-[540px]">
+                <div class="max-w-2xl mx-auto w-full my-auto space-y-6">
+                    <div class="text-center space-y-2">
+                        <div class="inline-block p-3 bg-cyan-500/10 rounded-2xl text-cyan-400 mb-2">
+                            <i class="fa-solid fa-id-card-clip text-3xl"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-4xl font-extrabold text-white">Registrasi Siswa</h2>
+                        <p class="text-slate-400 text-sm">Masukkan identitas diri Anda untuk mencatat skor dan penerbitan Sertifikat Resmi di akhir gim.</p>
+                    </div>
+
+                    <form id="identity-form" onsubmit="saveStudentIdentity(event)" class="bg-slate-950/70 border border-slate-800 p-6 md:p-8 rounded-2xl space-y-5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-user text-cyan-400 mr-1.5"></i>Nama Lengkap Siswa
+                            </label>
+                            <input type="text" id="input-name" required placeholder="Contoh: Ahmad Rizky Siregar" 
+                                class="glass-field w-full rounded-xl px-4 py-3 outline-none transition">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                    <i class="fa-solid fa-users text-cyan-400 mr-1.5"></i>Kelas / Rombel
+                                </label>
+                                <select id="input-class" required class="glass-field w-full rounded-xl px-4 py-3 outline-none transition">
+                                    <option value="">-- Pilih Kelas --</option>
+                                    <option value="XI Fase F - 1">XI Fase F - 1</option>
+                                    <option value="XI Fase F - 2">XI Fase F - 2</option>
+                                    <option value="XI Fase F - 3">XI Fase F - 3</option>
+                                    <option value="XI Fase F - 4">XI Fase F - 4</option>
+                                    <option value="XI Geografi Unggulan">XI Geografi Unggulan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                    <i class="fa-solid fa-school text-cyan-400 mr-1.5"></i>Nama Sekolah
+                                </label>
+                                <input type="text" id="input-school" required value="" placeholder="Contoh: SMAN 1 IX KOTO SUNGAI LASI" 
+                                    class="glass-field w-full rounded-xl px-4 py-3 outline-none transition">
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/20 transition transform hover:scale-[1.01] active:scale-95">
+                                Simpan Identity & Lanjut <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-800 flex justify-between">
+                    <button onclick="changeSlide(1)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                    </button>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: TUJUAN PEMBELAJARAN & OVERVIEW MATERI -->
+            <section id="slide-3" class="slide-enter p-6 md:p-10 hidden flex-col justify-between h-full min-h-[540px]">
+                <div class="space-y-6 my-auto">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
+                            <i class="fa-solid fa-bullseye text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Gambaran Umum & Tujuan Pembelajaran</h2>
+                            <p class="text-xs md:text-sm text-slate-400">Capaian Pembelajaran Geografi Fase F - Materi Sistem Informasi Geografis (SIG)</p>
+                        </div>
+                    </div>
+
+                    <!-- SIG Big Picture Overview Box (Definition first) -->
+                    <div class="bg-slate-950 border border-cyan-500/30 p-5 rounded-2xl flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-1 space-y-2">
+                            <h4 class="font-bold text-lg text-white">Apa itu SIG (Sistem Informasi Geografis)?</h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                SIG adalah sistem komputerisasi yang digunakan untuk memasukkan (input), menyimpan, mengelola, menganalisis, dan menyajikan data bergeoreferensi (memiliki koordinat di permukaan bumi) untuk mengambil keputusan keruangan secara efisien.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Target Learning Objectives Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl hover:border-cyan-500/50 transition">
+                            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-lg mb-3">1</div>
+                            <h3 class="font-bold text-white text-base mb-1">Memahami Konsep SIG</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Menjelaskan pengertian Sistem Informasi Geografis menurut para ahli serta karakteristik utamanya berbasis georeferensi spasial.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl hover:border-emerald-500/50 transition">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg mb-3">2</div>
+                            <h3 class="font-bold text-white text-base mb-1">Memahami Data Spasial</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Mempelajari karakteristik data spasial dan perbedaan antara data vektor dan raster dalam analisis SIG.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl hover:border-amber-500/50 transition">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg mb-3">3</div>
+                            <h3 class="font-bold text-white text-base mb-1">Simulasi & Operasi Analisis</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Mempraktikkan tahapan kerja SIG (Input, Processing, Output) serta analisis keruangan seperti *Overlay* (tumpang susun) dan *Buffering*.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 flex justify-center w-full">
+                        <img src="asets/nunu.jpg" alt="Ilustrasi Nunu" class="w-full max-w-[100%] h-auto rounded-2xl border border-amber-500/30 shadow-lg shadow-amber-500/10" style="max-width: 100%; object-fit: contain;">
+                    </div>
+
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
+                    <button onclick="changeSlide(2)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Identitas
+                    </button>
+                    <button onclick="changeSlide(4)" class="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-bold px-7 py-3 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition transform hover:scale-105">
+                        <span>Pelajari Materi Interaktif</span>
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: URAIAN MATERI INTERAKTIF -->
+            <section id="slide-4" class="slide-enter p-4 md:p-8 hidden flex-col justify-between h-full min-h-[540px]">
+                <div class="space-y-4">
+                    <!-- Material Tabs Navigation Header -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-book-bookmark text-cyan-400 text-xl"></i>
+                            <h2 class="text-lg md:text-xl font-bold text-white">E-Modul Interaktif SIG</h2>
+                        </div>
+                        <div class="flex flex-wrap gap-2 text-xs" id="material-tab-btns">
+                            <button onclick="switchMaterialTab('tab-komponen')" id="btn-tab-komponen" class="px-3.5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition">1. Komponen SIG</button>
+                            <button onclick="switchMaterialTab('tab-data')" id="btn-tab-data" class="px-3.5 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 transition">2. Vektor vs Raster</button>
+                            <button onclick="switchMaterialTab('tab-tahapan')" id="btn-tab-tahapan" class="px-3.5 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 transition">3. Tahapan Kerja</button>
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT 1: KOMPONEN SIG -->
+                    <div id="tab-komponen" class="material-tab-content" style="display: flex; flex-direction: column; gap: 18px;">
+                        <p class="text-xs text-slate-300 leading-relaxed" style="margin-bottom: 4px;">SIG terdiri dari 5 komponen utama yang saling terintegrasi agar dapat mengolah data geospasial secara optimal:</p>
+                        <div class="flex flex-wrap justify-center items-stretch gap-3 w-full" style="max-width: 1000px; margin: 0 auto; padding-top: 4px;">
+                            <div class="bg-slate-950/70 border border-slate-800 p-3 rounded-xl hover:border-cyan-500 transition flex flex-col gap-3" style="width: 170px; min-height: 180px; flex: 0 0 170px;">
+                                <div class="w-12 h-12 rounded-xl bg-cyan-500/20 overflow-hidden flex items-center justify-center shrink-0 border border-cyan-500/20">
+                                    <img src="asets/hardware.jpg" alt="Hardware" class="w-full h-full object-cover rounded-xl">
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">Hardware</h4>
+                                    <p class="text-[10.5px] text-slate-400 mt-1 leading-relaxed">Perangkat keras seperti komputer dan GPS.</p>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950/70 border border-slate-800 p-3 rounded-xl hover:border-emerald-500 transition flex flex-col gap-3" style="width: 170px; min-height: 180px; flex: 0 0 170px;">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-500/20 overflow-hidden flex items-center justify-center shrink-0 border border-emerald-500/20">
+                                    <img src="asets/sofware.jpg" alt="Software" class="w-full h-full object-cover rounded-xl">
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">Software</h4>
+                                    <p class="text-[10.5px] text-slate-400 mt-1 leading-relaxed">Program pemetaan seperti QGIS dan ArcGIS.</p>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950/70 border border-slate-800 p-3 rounded-xl hover:border-amber-500 transition flex flex-col gap-3" style="width: 170px; min-height: 180px; flex: 0 0 170px;">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/20 overflow-hidden flex items-center justify-center shrink-0 border border-amber-500/20">
+                                    <img src="asets/Data1.jpg" alt="Data" class="w-full h-full object-cover rounded-xl">
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">Data</h4>
+                                    <p class="text-[10.5px] text-slate-400 mt-1 leading-relaxed">Data spasial dan atribut yang menjadi sumber analisis.</p>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950/70 border border-slate-800 p-3 rounded-xl hover:border-purple-500 transition flex flex-col gap-3" style="width: 170px; min-height: 180px; flex: 0 0 170px;">
+                                <div class="w-12 h-12 rounded-xl bg-purple-500/20 overflow-hidden flex items-center justify-center shrink-0 border border-purple-500/20">
+                                    <img src="asets/brainware.jpg" alt="Brainware" class="w-full h-full object-cover rounded-xl">
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">Brainware</h4>
+                                    <p class="text-[10.5px] text-slate-400 mt-1 leading-relaxed">Pengguna yang mengoperasikan sistem dan menafsirkan hasil.</p>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950/70 border border-slate-800 p-3 rounded-xl hover:border-rose-500 transition flex flex-col gap-3" style="width: 170px; min-height: 180px; flex: 0 0 170px;">
+                                <div class="w-12 h-12 rounded-xl bg-rose-500/20 overflow-hidden flex items-center justify-center shrink-0 border border-rose-500/20">
+                                    <img src="asets/data.jpg" alt="Metode" class="w-full h-full object-cover rounded-xl">
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">Metode</h4>
+                                    <p class="text-[10.5px] text-slate-400 mt-1 leading-relaxed">Prosedur kerja dan teknik analisis untuk menghasilkan informasi keruangan.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-center pt-2">
+                            <img src="asets/komponen sig.jpg" alt="Ilustrasi komponen SIG" class="w-full max-w-[760px] h-40 md:h-48 rounded-2xl border border-slate-700 object-cover shadow-lg shadow-slate-950/50">
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT 2: VEKTOR VS RASTER -->
+                    <div id="tab-data" class="material-tab-content space-y-4 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center">
+                            <div class="bg-slate-950/70 border border-cyan-500/30 p-5 rounded-2xl space-y-2 h-[250px] w-[300px]">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-cyan-400 text-base"><i class="fa-solid fa-draw-polygon mr-2"></i>Data Vektor</h4>
+                                    <span class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded">Objek</span>
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Data vektor menggambarkan objek geografis dalam bentuk titik, garis, dan poligon yang memiliki koordinat tertentu.
+                                </p>
+                                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-400">
+                                    <p><strong class="text-slate-200">Contoh:</strong> jalan, sungai, batas desa, dan lokasi titik.</p>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950/70 border border-emerald-500/30 p-5 rounded-2xl space-y-2 h-[250px] w-[300px]">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-emerald-400 text-base"><i class="fa-solid fa-table-cells mr-2"></i>Data Raster</h4>
+                                    <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Grid</span>
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Data raster tersusun atas piksel atau grid dengan nilai pada setiap sel yang merepresentasikan wilayah tertentu.
+                                </p>
+                                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-400">
+                                    <p><strong class="text-slate-200">Contoh:</strong> citra satelit, foto udara, dan peta elevasi.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-center pt-2">
+                            <img src="asets/sepuluh.jpg" alt="Ilustrasi Data SIG" class="w-full max-w-[900px] h-52 rounded-xl border border-slate-700 object-cover shadow-lg shadow-slate-950/50">
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT 3: TAHAPAN KERJA -->
+                    <div id="tab-tahapan" class="material-tab-content hidden">
+                        <div style="display:flex; flex-direction:column; gap:20px; width:100%;">
+                            <div class="space-y-3 min-w-0 w-full">
+                                <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl space-y-1 w-full min-h-[62px]">
+                                    <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm">
+                                        <span class="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">1</span>
+                                        Input
+                                    </div>
+                                    <p class="text-[10.5px] text-slate-300 leading-relaxed">
+                                        Mengumpulkan data awal dari peta, citra, GPS, survei lapangan, dan data pendukung lain agar siap diolah dalam sistem SIG.
+                                    </p>
+                                    <div class="text-[9.5px] text-slate-400 bg-slate-900 p-1.5 rounded border border-slate-800">
+                                        Contoh: digitasi peta menjadi data digital dan pengumpulan data atribut.
+                                    </div>
+                                </div>
+                                <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl space-y-1 w-full min-h-[62px]">
+                                    <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                                        <span class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs">2</span>
+                                        Processing
+                                    </div>
+                                    <p class="text-[10.5px] text-slate-300 leading-relaxed">
+                                        Memproses data agar siap dianalisis, termasuk koreksi geometrik, klasifikasi, overlay, buffering, dan pengolahan atribut untuk menghasilkan informasi baru.
+                                    </p>
+                                    <div class="text-[9.5px] text-slate-400 bg-slate-900 p-1.5 rounded border border-slate-800">
+                                        Contoh: menumpangkan peta lereng dan peta tanah untuk analisis kesesuaian lahan.
+                                    </div>
+                                </div>
+                                <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-xl space-y-1 w-full min-h-[62px]">
+                                    <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                                        <span class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">3</span>
+                                        Output
+                                    </div>
+                                    <p class="text-[10.5px] text-slate-300 leading-relaxed">
+                                        Menyajikan hasil analisis dalam bentuk peta, tabel, grafik, dan laporan yang mudah dipahami untuk pengambilan keputusan.
+                                    </p>
+                                    <div class="text-[9.5px] text-slate-400 bg-slate-900 p-1.5 rounded border border-slate-800">
+                                        Contoh: peta rawan banjir, peta penggunaan lahan, atau laporan 3D untuk analisis wilayah.
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width:100%; max-width:100%; padding-top:4px;">
+                                <img src="asets/tahapnkerja.jpg" alt="Tahap kerja SIG" class="rounded-xl border border-slate-700 shadow-lg shadow-slate-950/40 w-full block" style="height: auto; aspect-ratio: 16 / 9; object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center">
+                    <button onclick="changeSlide(3)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Tujuan
+                    </button>
+                    <button onclick="changeSlide(5)" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold px-7 py-3 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition transform hover:scale-105">
+                        <span>Lanjut ke Gim Edukasi</span>
+                        <i class="fa-solid fa-gamepad"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: GIM EDUKASI INTERAKTIF (3 GAME MODES) -->
+            <section id="slide-5" class="slide-enter p-4 md:p-8 hidden flex-col justify-between h-full min-h-[540px]">
+                <div class="space-y-4">
+                    <!-- Game Header & Sub-Game Selector -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-400 text-2xl"></i>
+                            <div>
+                                <h2 class="text-lg md:text-xl font-extrabold text-white">Arena Gim Edukasi SIG</h2>
+                                <p class="text-xs text-slate-400">Selesaikan ketiga modul tantangan untuk mengumpulkan skor!</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Score counter badge -->
+                        <div class="bg-slate-950 border border-amber-500/40 px-4 py-1.5 rounded-full flex items-center gap-2">
+                            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+                            <span class="text-xs font-bold text-slate-300">Skor Gim:</span>
+                            <span id="current-game-score" class="font-mono font-black text-amber-400 text-base">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Mini Game Sub-Tabs -->
+                    <div class="flex gap-2 text-xs">
+                        <button onclick="switchGameMode('pg')" id="gtab-pg" class="px-3.5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition">
+                            <i class="fa-solid fa-list-check mr-1.5"></i>1. Pilihan Ganda
+                        </button>
+                        <button onclick="switchGameMode('match')" id="gtab-match" class="px-3.5 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 transition">
+                            <i class="fa-solid fa-handshake mr-1.5"></i>2. Menjodohkan
+                        </button>
+                        <button onclick="switchGameMode('cat')" id="gtab-cat" class="px-3.5 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 transition">
+                            <i class="fa-solid fa-boxes-stacked mr-1.5"></i>3. Mengkategorikan
+                        </button>
+                    </div>
+
+                    <!-- GIM MODE 1: PILIHAN GANDA -->
+                    <div id="game-mode-pg" class="game-container space-y-4">
+                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
+                            <div class="flex justify-between text-xs text-slate-400 font-mono">
+                                <span id="pg-question-num">Pertanyaan 1 dari 3</span>
+                                <span class="text-cyan-400 font-bold">Poin per soal: +20</span>
+                            </div>
+                            <h4 id="pg-question-text" class="text-sm md:text-base font-bold text-white leading-relaxed">
+                                Memuat pertanyaan pilihan ganda...
+                            </h4>
+                            <div id="pg-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <!-- Options will be rendered dynamically -->
+                            </div>
+                            <div id="pg-explanation" class="hidden rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-xs text-slate-300 mt-3">
+                                <span id="pg-explanation-label" class="font-bold text-cyan-300">Penjelasan:</span>
+                                <span id="pg-explanation-text"></span>
+                            </div>
+                            <div class="flex justify-end pt-1">
+                                <button id="pg-next-btn" type="button" disabled class="px-5 py-2.5 rounded-xl bg-slate-700 text-slate-400 font-bold text-sm cursor-not-allowed opacity-50 transition">
+                                    Pertanyaan Selanjutnya
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GIM MODE 2: MENJODOHKAN (MATCHING) -->
+                    <div id="game-mode-match" class="game-container space-y-4 hidden">
+                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+                            <p class="text-xs text-slate-300 mb-3">Klik item di sebelah kiri, kemudian klik deskripsi/fungsi yang cocok di sebelah kanan:</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                <!-- Items List -->
+                                <div id="match-items-left" class="space-y-2">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                                <!-- Targets List -->
+                                <div id="match-targets-right" class="space-y-2">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-3">
+                                <button id="match-next-btn" type="button" disabled class="px-5 py-2.5 rounded-xl bg-slate-700 text-slate-400 font-bold text-sm cursor-not-allowed opacity-50 transition">
+                                    Selanjutnya
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GIM MODE 3: MENGKATEGORIKAN (VEKTOR VS RASTER) -->
+                    <div id="game-mode-cat" class="game-container space-y-4 hidden">
+                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-3">
+                            <p class="text-xs text-slate-300">Klik item di bawah untuk memasukkannya ke dalam kategori Data SIG yang tepat (Vektor atau Raster):</p>
+                            
+                            <!-- Available Items Pool -->
+                            <div id="cat-items-pool" class="flex flex-wrap gap-2 p-3 bg-slate-900 rounded-xl border border-slate-800 min-h-[50px]">
+                                <!-- Rendered dynamically -->
+                            </div>
+
+                            <!-- Buckets Area -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                <div id="bucket-vector" onclick="assignActiveItemTo('vektor')" class="border-2 border-dashed border-cyan-500/40 p-3 rounded-xl min-h-[120px] space-y-2 hover:brightness-110 transition cursor-pointer overflow-hidden relative bg-slate-900" style="background-image: linear-gradient(rgba(2, 6, 23, 0.38), rgba(2, 6, 23, 0.68)), url('asets/vektor.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                                    <div class="flex items-center justify-between gap-2 relative z-10">
+                                        <div class="flex items-center gap-2 text-cyan-200 text-xs font-bold drop-shadow-md">
+                                            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-cyan-500/20 border border-cyan-300/50">
+                                                <i class="fa-solid fa-draw-polygon text-[12px]"></i>
+                                            </span>
+                                            <span>Kategori: DATA VEKTOR</span>
+                                        </div>
+                                        <span class="text-[10px] text-slate-200/90 drop-shadow-md">Klik untuk masukkan</span>
+                                    </div>
+                                    <div id="bucket-vector-content" class="relative z-10 flex flex-wrap gap-1.5"></div>
+                                </div>
+
+                                <div id="bucket-raster" onclick="assignActiveItemTo('raster')" class="border-2 border-dashed border-emerald-500/40 p-3 rounded-xl min-h-[120px] space-y-2 hover:brightness-110 transition cursor-pointer overflow-hidden relative bg-slate-900" style="background-image: linear-gradient(rgba(2, 6, 23, 0.38), rgba(2, 6, 23, 0.68)), url('asets/raster.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                                    <div class="flex items-center justify-between gap-2 relative z-10">
+                                        <div class="flex items-center gap-2 text-emerald-200 text-xs font-bold drop-shadow-md">
+                                            <span class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/20 border border-emerald-300/50">
+                                                <i class="fa-solid fa-image text-[12px]"></i>
+                                            </span>
+                                            <span>Kategori: DATA RASTER</span>
+                                        </div>
+                                        <span class="text-[10px] text-slate-200/90 drop-shadow-md">Klik untuk masukkan</span>
+                                    </div>
+                                    <div id="bucket-raster-content" class="relative z-10 flex flex-wrap gap-1.5"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center">
+                    <button onclick="changeSlide(4)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Materi
+                    </button>
+                    <button onclick="finishGameAndGenerateCert()" class="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-extrabold px-7 py-3 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition transform hover:scale-105">
+                        <span>Lihat Sertifikat</span>
+                        <i class="fa-solid fa-certificate"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: SERTIFIKAT & REKAPITULASI NILAI (PRINTABLE PDF) -->
+            <section id="slide-6" class="slide-enter p-4 md:p-8 hidden flex-col justify-between h-full min-h-[540px]">
+                <div class="space-y-4 my-auto">
+                    <!-- Certificate Container with Print ID -->
+                    <div id="certificate-print-area" class="bg-gradient-to-br from-slate-100 via-white to-cyan-50 border-[3px] border-double border-cyan-500/80 p-6 md:p-10 rounded-3xl relative overflow-hidden shadow-[0_18px_45px_rgba(6,182,212,0.18)] text-center space-y-4">
+                        <!-- Watermark GIS Icon Background -->
+                        <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                            <i class="fa-solid fa-earth-asia text-[280px] text-cyan-600"></i>
+                        </div>
+
+                        <!-- Certificate Header -->
+                        <div class="flex justify-between items-center border-b border-slate-300 pb-4 relative z-10">
+                            <div class="flex items-center gap-2 text-left">
+                                <div class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center shadow-md">
+                                    <i class="fa-solid fa-map text-cyan-200 text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-extrabold text-slate-800 text-base tracking-wide">GEO-CERTIFICATE OF COMPETENCY</h3>
+                                    <p class="text-[10px] text-slate-600">Sistem Informasi Geografis • Fase F Geografi</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-600 block">Nomor Lisensi:</span>
+                                <span id="cert-id" class="font-mono text-xs text-cyan-700 font-bold">SIG-2026-8941</span>
+                            </div>
+                        </div>
+
+                        <!-- Certificate Recipient -->
+                        <div class="space-y-2 py-2 relative z-10">
+                            <p class="text-xs uppercase tracking-[0.25em] text-slate-600">Diberikan Kepada :</p>
+                            <h2 id="cert-student-name" class="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-700 via-cyan-700 to-emerald-600 drop-shadow-sm">
+                                Nama Siswa
+                            </h2>
+                            <p id="cert-student-meta" class="text-xs md:text-sm text-slate-700">
+                                Kelas: XI Fase F | SMA Negeri 1 Jakarta
+                            </p>
+                        </div>
+
+                        <!-- Achievement Summary & Score -->
+                        <div class="bg-white/80 border border-slate-300 rounded-2xl p-4 max-w-xl mx-auto grid grid-cols-3 gap-2 relative z-10 shadow-inner shadow-cyan-100">
+                            <div>
+                                <span class="text-[10px] text-slate-600 block">Nilai Akhir</span>
+                                <span id="cert-final-score" class="text-2xl font-black text-emerald-700">100</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-600 block">Predikat</span>
+                                <span id="cert-grade" class="text-sm font-bold text-cyan-700 block mt-1">Sangat Memuaskan</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-600 block">Status</span>
+                                <span id="cert-status" class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded inline-block mt-1">LULUS SIG</span>
+                            </div>
+                        </div>
+
+                        <!-- Verification Footnote -->
+                        <div class="flex flex-wrap justify-between items-end text-[11px] text-slate-600 pt-4 border-t border-slate-300 relative z-10">
+                            <div class="text-left">
+                                <p>Tanggal Terbit: <span id="cert-date" class="text-slate-800 font-semibold">12 September 2026</span></p>
+                                <p>Ref Kurikulum: Capaian Pembelajaran Fase F Ruangguru</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-slate-800">Tim Pengembang</p>
+                                <p class="text-[10px] text-slate-600">Media Pembelajaran Geografi Interaktif</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Print & Restart Controls -->
+                <div class="mt-4 pt-3 border-t border-slate-800 flex flex-wrap justify-between items-center gap-3 no-print">
+                    <button onclick="changeSlide(5)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Ulangi Gim
+                    </button>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="restartAll()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Restart Pembelajaran
+                        </button>
+                        <button onclick="printCertificate()" class="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-extrabold px-7 py-3 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition transform hover:scale-105">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Cetak / Simpan PDF</span>
+                        </button>
+                        <button onclick="changeSlide(7)" class="bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-400 hover:to-fuchsia-400 text-white font-extrabold px-7 py-3 rounded-xl shadow-lg shadow-violet-500/20 flex items-center gap-2 transition transform hover:scale-105">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>Tim Pengembang</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: PEMBUAT -->
+            <section id="slide-7" class="slide-enter p-4 md:p-8 hidden flex-col justify-between h-full min-h-[540px]">
+                <div class="space-y-6 my-auto">
+                    <div class="text-center space-y-2">
+                        <p class="text-xs uppercase tracking-[0.25em] text-cyan-400 font-semibold">Media Pembelajaran</p>
+                        <h2 class="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400">Tim Pengembang</h2>
+                    </div>
+
+                    <div class="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+                        <div class="bg-slate-950/80 border border-cyan-500/30 rounded-3xl p-6 shadow-xl shadow-cyan-900/10 flex flex-col justify-center">
+                            <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border border-cyan-400/50 bg-cyan-500/15 shadow-lg shadow-cyan-500/10">
+                                <img src="asets/dosen.png" alt="Foto dosen pengampu" class="h-full w-full object-cover object-center scale-100" style="object-position: center 18%;">
+                            </div>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 text-center">Dosen Pengampu</p>
+                            <h3 class="mt-3 text-xl font-black text-white text-center">Dr. Nofrion, M.Pd</h3>
+                            <p class="mt-3 text-sm text-slate-300 text-center leading-relaxed">
+                                Dosen pengampu yang membimbing dan mendukung proses pembelajaran Geografi dalam pengembangan media interaktif ini.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950/80 border border-emerald-500/30 rounded-3xl p-6 shadow-xl shadow-emerald-900/10 flex flex-col justify-center">
+                            <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border border-emerald-400/50 bg-emerald-500/15 shadow-lg shadow-emerald-500/10">
+                                <img src="asets/pak dos.jpeg" alt="Foto dosen pemandu" class="h-full w-full object-cover object-center scale-100" style="object-position: center 18%;">
+                            </div>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 text-center">Dosen Pembimbing</p>
+                            <h3 class="mt-3 text-xl font-black text-white text-center">Ikwanul Furqon, M.Pd</h3>
+                            <p class="mt-3 text-sm text-slate-300 text-center leading-relaxed">
+                                Dosen pembimbing yang membimbing dan mengarahkan jalannya pembelajaran serta pengembangan media interaktif SIG ini.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-950/80 border border-violet-500/30 rounded-3xl p-6 shadow-xl shadow-violet-900/10 flex flex-col justify-center">
+                            <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border border-violet-400/50 bg-violet-500/15 shadow-lg shadow-violet-500/10">
+                                <img src="asets/fotokuu.jpeg" alt="Foto pembuat" class="h-full w-full object-cover object-center scale-100" style="object-position: center 18%;">
+                            </div>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 text-center">Identitas Pembuat</p>
+                            <div class="mt-5 mx-auto w-full max-w-[260px] space-y-3 text-sm text-slate-200">
+                                <div class="grid grid-cols-[70px_12px_1fr] gap-2 items-center rounded-xl bg-slate-900/60 border border-violet-500/20 px-3 py-2">
+                                    <span class="font-bold text-violet-300">Nama</span>
+                                    <span class="text-slate-400 text-center">:</span>
+                                    <span class="text-white">Dina Nurhafiza</span>
+                                </div>
+                                <div class="grid grid-cols-[70px_12px_1fr] gap-2 items-center rounded-xl bg-slate-900/60 border border-violet-500/20 px-3 py-2">
+                                    <span class="font-bold text-violet-300">NIM</span>
+                                    <span class="text-slate-400 text-center">:</span>
+                                    <span class="text-white">25045005</span>
+                                </div>
+                                <div class="grid grid-cols-[70px_12px_1fr] gap-2 items-center rounded-xl bg-slate-900/60 border border-violet-500/20 px-3 py-2">
+                                    <span class="font-bold text-violet-300">Prodi</span>
+                                    <span class="text-slate-400 text-center">:</span>
+                                    <span class="text-white">Pendidikan Geografi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center gap-3 no-print">
+                    <button onclick="changeSlide(6)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                    </button>
+                    <button onclick="restartAll()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 text-sm font-semibold transition flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Restart
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- JavaScript Application Engine -->
+    <script>
+        let currentSlide = 1;
+        let studentData = {
+            name: '',
+            class: '',
+            school: '',
+            avatar: 'Analis Spasial'
+        };
+        let soundEnabled = true;
+        let totalScore = 0;
+
+        // Web Audio API Synthesizer for SFX without external audio files
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const backgroundMusic = new Audio('asets/background.mp3');
+        const slideSound = new Audio('asets/sound.mp3');
+        const gameplaySound = new Audio('asets/sound.mp3');
+        const winSound = new Audio('asets/win.mp3');
+        const wrongSound = new Audio('asets/wong.mp3');
+        backgroundMusic.loop = true;
+        backgroundMusic.volume = 0.22;
+        slideSound.volume = 0.6;
+        gameplaySound.volume = 0.55;
+        winSound.volume = 0.8;
+        wrongSound.volume = 0.9;
+
+        function stopAllSoundEffects() {
+            [slideSound, gameplaySound, winSound, wrongSound, backgroundMusic].forEach(audio => {
+                if (!audio) return;
+                try {
+                    audio.pause();
+                    audio.currentTime = 0;
+                } catch (e) {
+                    console.log('Stop sound error', e);
+                }
+            });
+        }
+
+        function playSlideEffect() {
+            if (!soundEnabled) return;
+            try {
+                slideSound.pause();
+                slideSound.currentTime = 0;
+                slideSound.play();
+            } catch (e) {
+                console.log('Slide sound error', e);
+            }
+        }
+
+        function playGameplaySound() {
+            if (!soundEnabled) return;
+            try {
+                gameplaySound.pause();
+                gameplaySound.currentTime = 0;
+                gameplaySound.play();
+            } catch (e) {
+                console.log('Gameplay sound error', e);
+            }
+        }
+
+        function playWinSound() {
+            if (!soundEnabled) return;
+            try {
+                winSound.pause();
+                winSound.currentTime = 0;
+                winSound.play();
+            } catch (e) {
+                console.log('Win sound error', e);
+            }
+        }
+        
+        function playTone(freq, duration, type = 'sine') {
+            if (!soundEnabled) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log('Audio init error', e);
+            }
+        }
+
+        function playSuccessSound() {
+            playWinSound();
+            playTone(523.25, 0.15); // C5
+            setTimeout(() => playTone(659.25, 0.2), 100); // E5
+            setTimeout(() => playTone(783.99, 0.3), 200); // G5
+        }
+
+        function playErrorSound() {
+            if (!soundEnabled) return;
+            try {
+                wrongSound.pause();
+                wrongSound.currentTime = 0;
+                wrongSound.play();
+            } catch (e) {
+                console.log('Wrong sound error', e);
+            }
+            playTone(220, 0.2, 'sawtooth');
+            setTimeout(() => playTone(180, 0.3, 'sawtooth'), 150);
+        }
+
+        function startBackgroundMusic() {
+            if (!soundEnabled) return;
+            try {
+                backgroundMusic.muted = false;
+                backgroundMusic.volume = 0.22;
+                backgroundMusic.play();
+            } catch (e) {
+                console.log('Background music error', e);
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const btnIcon = document.getElementById('sound-icon');
+            backgroundMusic.muted = !soundEnabled;
+            slideSound.muted = !soundEnabled;
+            gameplaySound.muted = !soundEnabled;
+            winSound.muted = !soundEnabled;
+            wrongSound.muted = !soundEnabled;
+
+            if (soundEnabled) {
+                btnIcon.className = 'fa-solid fa-volume-high';
+                startBackgroundMusic();
+                showToast('Suara Diaktifkan', 'info');
+            } else {
+                backgroundMusic.pause();
+                backgroundMusic.currentTime = 0;
+                btnIcon.className = 'fa-solid fa-volume-xmark';
+                showToast('Suara Dimatikan', 'info');
+            }
+        }
+
+        document.addEventListener('pointerdown', startBackgroundMusic, { once: true });
+        document.addEventListener('keydown', startBackgroundMusic, { once: true });
+
+        function changeSlide(slideNum, options = { playSound: true }) {
+            // Validate identity if trying to jump past slide 2
+            if (slideNum > 2 && (!studentData.name || !studentData.school)) {
+                showToast('Harap lengkapi Identitas Siswa di Slide 2 terlebih dahulu!', 'error');
+                slideNum = 2;
+            }
+
+            // Hide all slides
+            for (let i = 1; i <= 7; i++) {
+                const s = document.getElementById(`slide-${i}`);
+                if (s) s.classList.add('hidden');
+                
+                // Update indicator dots
+                const dot = document.getElementById(`step-${i}-dot`);
+                if (dot) {
+                    if (i <= slideNum) {
+                        dot.className = 'w-3 h-3 rounded-full bg-cyan-400 transition-all';
+                    } else {
+                        dot.className = 'w-3 h-3 rounded-full bg-slate-700 transition-all';
+                    }
+                }
+            }
+
+            // Show target slide
+            const targetSlide = document.getElementById(`slide-${slideNum}`);
+            if (targetSlide) {
+                targetSlide.classList.remove('hidden');
+            }
+
+            currentSlide = slideNum;
+            document.getElementById('slide-number-display').innerText = `Slide ${slideNum}/7`;
+            if (options.playSound !== false) {
+                playSlideEffect();
+            }
+        }
+
+        function selectAvatar(avatarName) {
+            studentData.avatar = avatarName;
+            document.querySelectorAll('.avatar-option').forEach(el => {
+                el.classList.remove('border-cyan-400', 'bg-cyan-950/40');
+            });
+            event.currentTarget.classList.add('border-cyan-400', 'bg-cyan-950/40');
+            showToast(`Avatar selected: ${avatarName}`);
+        }
+
+        function saveStudentIdentity(e) {
+            e.preventDefault();
+            studentData.name = document.getElementById('input-name').value.trim();
+            studentData.class = document.getElementById('input-class').value;
+            studentData.school = document.getElementById('input-school').value.trim();
+
+            if (studentData.name && studentData.school) {
+                document.getElementById('badge-student-name').innerText = studentData.name;
+                document.getElementById('user-badge').classList.remove('hidden');
+                document.getElementById('user-badge').classList.add('flex');
+                showToast('Identitas berhasil disimpan!');
+                changeSlide(3);
+            }
+        }
+
+        function switchMaterialTab(tabId) {
+            document.querySelectorAll('.material-tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            });
+
+            const activeTab = document.getElementById(tabId);
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
+                activeTab.style.display = (tabId === 'tab-komponen') ? 'flex' : 'block';
+            }
+
+            // Reset tab button styles
+            const btns = document.querySelectorAll('#material-tab-btns button');
+            btns.forEach(b => {
+                b.className = 'px-3.5 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 transition';
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = 'px-3.5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition';
+            }
+            playSlideEffect();
+        }
+
+        function updateGISOverlay() {
+            const topo = document.getElementById('layer-topo').checked;
+            const river = document.getElementById('layer-river').checked;
+            const road = document.getElementById('layer-road').checked;
+
+            const visTopo = document.getElementById('vis-topo');
+            const visRiver = document.getElementById('vis-river');
+            const visRoad = document.getElementById('vis-road');
+            const statusText = document.getElementById('overlay-status-text');
+
+            if (topo) visTopo.classList.remove('hidden'); else visTopo.classList.add('hidden');
+            if (river) visRiver.classList.remove('hidden'); else visRiver.classList.add('hidden');
+            if (road) visRoad.classList.remove('hidden'); else visRoad.classList.add('hidden');
+
+            const count = (topo ? 1 : 0) + (river ? 1 : 0) + (road ? 1 : 0);
+            if (count === 3) {
+                statusText.innerText = 'Peta Kesesuaian Lahan Lengkap (Sangat Layak)';
+                statusText.className = 'text-emerald-400 font-bold';
+                playSuccessSound();
+            } else if (count === 2) {
+                statusText.innerText = 'Analisis Parsial (Sedang)';
+                statusText.className = 'text-amber-400 font-bold';
+            } else {
+                statusText.innerText = 'Data Layer Kurang';
+                statusText.className = 'text-rose-400 font-bold';
+            }
+        }
+
+        let gameScoreState = {
+            pg: 0,
+            match: 0,
+            cat: 0
+        };
+
+        // GIM 1: PILIHAN GANDA DATA & STATE
+        const pgQuestions = [
+            {
+                q: "Apa komponen SIG yang berfungsi sebagai perangkat lunak untuk mengolah data geospasial?",
+                options: ["ArcGIS & QGIS", "GPS & Plotter", "Scanner & Digitizer", "Analis Spasial"],
+                answer: 0,
+                explanation: "Perangkat lunak SIG seperti ArcGIS dan QGIS berfungsi untuk mengolah, menganalisis, dan menampilkan data geospasial secara digital."
+            },
+            {
+                q: "Format data SIG yang disajikan dalam bentuk titik, garis, dan poligon disebut...",
+                options: ["Data Raster", "Data Atribut", "Data Vektor", "Data Tabuler"],
+                answer: 2,
+                explanation: "Data vektor adalah data spasial yang disajikan dalam bentuk titik, garis, dan poligon yang merepresentasikan objek di permukaan bumi."
+            },
+            {
+                q: "Tahapan analisis SIG yang menggabungkan dua atau lebih layer peta tematik untuk menghasilkan informasi baru disebut...",
+                options: ["Buffering", "Overlay (Tumpang Susun)", "Digitasi", "Geocoding"],
+                answer: 1,
+                explanation: "Overlay atau tumpang susun adalah teknik dalam SIG untuk menggabungkan beberapa layer peta untuk menghasilkan informasi baru dari analisis keruangan."
+            }
+        ];
+        let currentPgIndex = 0;
+
+        function renderPgQuestion(options = { playSound: true }) {
+            if (options.playSound !== false) {
+                playGameplaySound();
+            }
+            const q = pgQuestions[currentPgIndex];
+            const explanationBox = document.getElementById('pg-explanation');
+            const explanationText = document.getElementById('pg-explanation-text');
+            const explanationLabel = document.getElementById('pg-explanation-label');
+            const nextBtn = document.getElementById('pg-next-btn');
+            const container = document.getElementById('pg-options-container');
+
+            document.getElementById('pg-question-num').innerText = `Pertanyaan ${currentPgIndex + 1} dari ${pgQuestions.length}`;
+            document.getElementById('pg-question-text').innerText = q.q;
+            explanationBox.classList.add('hidden');
+            explanationText.innerText = '';
+            explanationLabel.innerText = 'Penjelasan:';
+            nextBtn.disabled = true;
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-700', 'text-slate-400');
+            nextBtn.classList.remove('bg-cyan-500', 'text-slate-950', 'opacity-100', 'cursor-pointer');
+            nextBtn.innerText = currentPgIndex === pgQuestions.length - 1 ? 'Selanjutnya' : 'Pertanyaan Selanjutnya';
+
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'p-3.5 rounded-xl border border-slate-700 bg-slate-900 hover:border-cyan-400 text-left text-xs md:text-sm text-slate-200 font-medium transition flex items-center gap-3';
+                btn.innerHTML = `<span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-cyan-400">${String.fromCharCode(65 + idx)}</span> <span>${opt}</span>`;
+                btn.onclick = () => checkPgAnswer(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function pgGoToNextQuestion() {
+            const nextBtn = document.getElementById('pg-next-btn');
+            if (!nextBtn || nextBtn.disabled) return;
+
+            if (currentPgIndex < pgQuestions.length - 1) {
+                currentPgIndex++;
+                renderPgQuestion();
+            } else {
+                showToast('Tantangan Pilihan Ganda Selesai! Melanjut ke Gim Menjodohkan...');
+                setTimeout(() => switchGameMode('match'), 1200);
+            }
+        }
+
+        document.getElementById('pg-next-btn').onclick = pgGoToNextQuestion;
+
+        function checkPgAnswer(selectedIdx) {
+            const q = pgQuestions[currentPgIndex];
+            const container = document.getElementById('pg-options-container');
+            const explanationBox = document.getElementById('pg-explanation');
+            const explanationText = document.getElementById('pg-explanation-text');
+            const explanationLabel = document.getElementById('pg-explanation-label');
+            const nextBtn = document.getElementById('pg-next-btn');
+            const optionButtons = container.querySelectorAll('button');
+
+            if (selectedIdx === q.answer) {
+                playSuccessSound();
+                gameScoreState.pg += 20;
+                showToast('Jawaban Benar! (+20 Skor)');
+
+                optionButtons.forEach((btn, idx) => {
+                    btn.disabled = true;
+                    btn.classList.remove('hover:border-cyan-400');
+                    if (idx === q.answer) {
+                        btn.classList.add('border-cyan-400', 'bg-cyan-500/20', 'text-white');
+                        btn.style.borderColor = '#38bdf8';
+                    }
+                });
+
+                explanationLabel.innerText = 'Penjelasan jawaban benar:';
+                explanationText.innerText = `Jawaban benar adalah ${q.options[q.answer]}. ${q.explanation || 'Penjelasan materi sudah ditampilkan di sini untuk membantu pemahaman Anda.'}`;
+                explanationBox.classList.remove('hidden');
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-700', 'text-slate-400');
+                nextBtn.classList.add('bg-cyan-500', 'text-slate-950', 'cursor-pointer', 'opacity-100');
+                updateTotalGameScore();
+                return;
+            }
+
+            optionButtons.forEach((btn, idx) => {
+                btn.classList.remove('border-cyan-400', 'bg-cyan-500/10', 'text-cyan-200');
+                if (idx === selectedIdx) {
+                    btn.classList.add('border-rose-500', 'bg-rose-500/10', 'text-rose-200');
+                }
+            });
+            playErrorSound();
+            explanationLabel.innerText = 'Analisis jawaban salah:';
+            explanationText.innerText = `Jawaban yang Anda pilih yaitu "${q.options[selectedIdx]}" belum tepat. Coba cari lagi dari konsep yang paling sesuai dengan soal. ${q.explanation || 'Perhatikan kembali kata kunci dalam pertanyaan untuk menemukan jawaban yang benar.'}`;
+            explanationBox.classList.remove('hidden');
+            nextBtn.disabled = true;
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-700', 'text-slate-400');
+            nextBtn.classList.remove('bg-cyan-500', 'text-slate-950', 'opacity-100', 'cursor-pointer');
+            showToast('Jawaban Kurang Tepat! Coba lagi!', 'error');
+        }
+
+        // GIM 2: MENJODOHKAN (MATCHING) DATA
+        const matchData = [
+            { id: 1, left: "Data Raster", right: "Format matriks piksel/grid dari foto udara" },
+            { id: 2, left: "Data Vektor", right: "Bentuk titik, garis, dan polygon pada peta" },
+            { id: 3, left: "Overlay", right: "Teknik menumpangkan peta untuk analisis gabungan" },
+            { id: 4, left: "Buffering", right: "Analisis zona jangkauan radius dari suatu titik/garis" }
+        ];
+        let selectedMatchLeft = null;
+        let matchedPairCount = 0;
+
+        function renderMatchingGame() {
+            playGameplaySound();
+            const leftCol = document.getElementById('match-items-left');
+            const rightCol = document.getElementById('match-targets-right');
+            const nextBtn = document.getElementById('match-next-btn');
+            leftCol.innerHTML = '';
+            rightCol.innerHTML = '';
+            matchedPairCount = 0;
+            selectedMatchLeft = null;
+
+            if (nextBtn) {
+                nextBtn.disabled = true;
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-700', 'text-slate-400');
+                nextBtn.classList.remove('bg-cyan-500', 'text-slate-950', 'opacity-100', 'cursor-pointer');
+            }
+
+            // Shuffle rights for challenge
+            const shuffledRights = [...matchData].sort(() => Math.random() - 0.5);
+
+            matchData.forEach(item => {
+                const div = document.createElement('div');
+                div.id = `match-left-${item.id}`;
+                div.className = 'p-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 cursor-pointer transition font-semibold text-slate-200 flex items-center justify-between';
+                div.innerHTML = `<span>${item.left}</span> <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>`;
+                div.onclick = () => selectMatchLeft(item.id);
+                leftCol.appendChild(div);
+            });
+
+            shuffledRights.forEach(item => {
+                const div = document.createElement('div');
+                div.id = `match-right-${item.id}`;
+                div.className = 'p-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-400 cursor-pointer transition text-slate-300';
+                div.innerText = item.right;
+                div.onclick = () => checkMatchPair(item.id);
+                rightCol.appendChild(div);
+            });
+        }
+
+        function selectMatchLeft(id) {
+            selectedMatchLeft = id;
+            matchData.forEach(item => {
+                const el = document.getElementById(`match-left-${item.id}`);
+                if (el) el.classList.remove('border-cyan-400', 'bg-cyan-950/40');
+            });
+            const selectedEl = document.getElementById(`match-left-${id}`);
+            if (selectedEl) selectedEl.classList.add('border-cyan-400', 'bg-cyan-950/40');
+            playTone(400, 0.05);
+        }
+
+        function checkMatchPair(rightId) {
+            if (!selectedMatchLeft) {
+                showToast('Pilih item di sebelah kiri dulu!', 'error');
+                return;
+            }
+
+            if (selectedMatchLeft === rightId) {
+                playSuccessSound();
+                gameScoreState.match += 10;
+                matchedPairCount += 1;
+                showToast('Jodoh Cocok! (+10 Poin)');
+                
+                // Disable matched pair
+                document.getElementById(`match-left-${selectedMatchLeft}`).className = 'p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/50 text-emerald-400 cursor-not-allowed opacity-60';
+                document.getElementById(`match-right-${rightId}`).className = 'p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/50 text-emerald-400 cursor-not-allowed opacity-60';
+                
+                selectedMatchLeft = null;
+                updateTotalGameScore();
+
+                const nextBtn = document.getElementById('match-next-btn');
+                if (matchedPairCount === matchData.length && nextBtn) {
+                    nextBtn.disabled = false;
+                    nextBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-700', 'text-slate-400');
+                    nextBtn.classList.add('bg-cyan-500', 'text-slate-950', 'cursor-pointer');
+                    nextBtn.classList.remove('opacity-100');
+                    showToast('Semua pasangan sudah cocok! Silakan lanjut ke mengkategorikan.');
+                }
+            } else {
+                playErrorSound();
+                showToast('Pasangan kurang tepat, coba lagi!', 'error');
+            }
+        }
+
+        document.getElementById('match-next-btn').onclick = () => {
+            if (matchedPairCount !== matchData.length) {
+                showToast('Selesaikan semua pasangan dulu!', 'error');
+                return;
+            }
+            showToast('Melanjut ke tahap Mengkategorikan...');
+            setTimeout(() => switchGameMode('cat'), 800);
+        };
+
+        // GIM 3: MENGKATEGORIKAN (CATEGORIZATION) DATA
+        const catItems = [
+            { id: 'c1', name: 'Jaringan Jalan (Garis)', category: 'vektor' },
+            { id: 'c2', name: 'Citra Satelit Landsat', category: 'raster' },
+            { id: 'c3', name: 'Batas Wilayah Provinsi (Poligon)', category: 'vektor' },
+            { id: 'c4', name: 'Foto Udara Drone (Piksel Grid)', category: 'raster' }
+        ];
+        let activeCatItem = null;
+        let placedCatItemIds = new Set();
+
+        function renderCatGame() {
+            playGameplaySound();
+            const pool = document.getElementById('cat-items-pool');
+            const vectorBucket = document.getElementById('bucket-vector-content');
+            const rasterBucket = document.getElementById('bucket-raster-content');
+
+            if (pool) pool.innerHTML = '';
+            if (vectorBucket) vectorBucket.innerHTML = '';
+            if (rasterBucket) rasterBucket.innerHTML = '';
+
+            placedCatItemIds = new Set();
+            activeCatItem = null;
+
+            catItems.forEach(item => {
+                const badge = document.createElement('span');
+                badge.id = `cat-item-${item.id}`;
+                badge.className = 'px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold cursor-pointer hover:border-cyan-400 transition inline-block';
+                badge.innerText = item.name;
+                badge.onclick = () => selectCatItem(item);
+                pool.appendChild(badge);
+            });
+        }
+
+        function selectCatItem(item) {
+            if (placedCatItemIds.has(item.id)) {
+                return;
+            }
+
+            activeCatItem = item;
+            catItems.forEach(i => {
+                const el = document.getElementById(`cat-item-${i.id}`);
+                if (el) el.classList.remove('border-cyan-400', 'bg-cyan-950/50');
+            });
+            const selected = document.getElementById(`cat-item-${item.id}`);
+            if (selected) selected.classList.add('border-cyan-400', 'bg-cyan-950/50');
+            showToast(`Dipilih: ${item.name}. Klik kategori tujuan!`);
+            playTone(440, 0.05);
+        }
+
+        function assignActiveItemTo(targetCategory) {
+            if (!activeCatItem) {
+                showToast('Klik item terlebih dahulu di kotak atas!', 'error');
+                return;
+            }
+
+            if (placedCatItemIds.has(activeCatItem.id)) {
+                activeCatItem = null;
+                return;
+            }
+
+            const targetBucketKey = targetCategory === 'vektor' ? 'vector' : 'raster';
+            const targetLabel = targetCategory === 'vektor' ? 'VEKTOR' : 'RASTER';
+
+            if (activeCatItem.category === targetCategory) {
+                playSuccessSound();
+                gameScoreState.cat += 10;
+                updateTotalGameScore();
+                placedCatItemIds.add(activeCatItem.id);
+
+                const bucketContent = document.getElementById(`bucket-${targetBucketKey}-content`);
+                const itemBadge = document.getElementById(`cat-item-${activeCatItem.id}`);
+                if (itemBadge) itemBadge.remove();
+
+                const targetTag = document.createElement('span');
+                targetTag.className = 'px-2.5 py-1 rounded bg-slate-800 border border-emerald-500/50 text-emerald-300 text-[11px] font-semibold';
+                targetTag.innerText = activeCatItem.name;
+                if (bucketContent) bucketContent.appendChild(targetTag);
+
+                showToast(`Benar! ${activeCatItem.name} tergolong Data ${targetLabel}`);
+                activeCatItem = null;
+            } else {
+                playErrorSound();
+                showToast(`Salah! ${activeCatItem.name} bukan Data ${targetLabel}`, 'error');
+            }
+        }
+
+        function switchGameMode(mode) {
+            playGameplaySound();
+            document.querySelectorAll('.game-container').forEach(el => el.classList.add('hidden'));
+            
+            const btns = ['gtab-pg', 'gtab-match', 'gtab-cat'];
+            btns.forEach(b => {
+                document.getElementById(b).className = 'px-3.5 py-2 rounded-lg bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 transition';
+            });
+
+            if (mode === 'pg') {
+                document.getElementById('game-mode-pg').classList.remove('hidden');
+                document.getElementById('gtab-pg').className = 'px-3.5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition';
+            } else if (mode === 'match') {
+                document.getElementById('game-mode-match').classList.remove('hidden');
+                document.getElementById('gtab-match').className = 'px-3.5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition';
+                renderMatchingGame();
+            } else if (mode === 'cat') {
+                document.getElementById('game-mode-cat').classList.remove('hidden');
+                document.getElementById('gtab-cat').className = 'px-3.5 py-2 rounded-lg bg-cyan-500 text-slate-950 font-bold transition';
+                renderCatGame();
+            }
+        }
+
+        function updateTotalGameScore() {
+            totalScore = gameScoreState.pg + gameScoreState.match + gameScoreState.cat;
+            document.getElementById('current-game-score').innerText = totalScore;
+        }
+
+        function finishGameAndGenerateCert() {
+            // Update certificate fields
+            const certStudentName = document.getElementById('cert-student-name');
+            const certStudentMeta = document.getElementById('cert-student-meta');
+            const certFinalScore = document.getElementById('cert-final-score');
+            const certGrade = document.getElementById('cert-grade');
+            const certStatus = document.getElementById('cert-status');
+            const certId = document.getElementById('cert-id');
+            const certDate = document.getElementById('cert-date');
+
+            if (certStudentName) certStudentName.innerText = studentData.name || 'Ahmad Rizky Siregar';
+            if (certStudentMeta) certStudentMeta.innerText = `Kelas: ${studentData.class || 'XI Fase F'} | ${studentData.school || 'SMA Negeri 1 Jakarta'}`;
+
+            const finalScoreVal = Math.min(100, totalScore);
+            if (certFinalScore) certFinalScore.innerText = finalScoreVal;
+
+            let statusText = 'TIDAK LULUS';
+            let statusClass = 'bg-red-100 text-red-700';
+            let gradeText = 'Perlu Pendalaman Lagi';
+
+            if (finalScoreVal >= 75) {
+                statusText = 'LULUS';
+                statusClass = 'bg-emerald-100 text-emerald-700';
+                gradeText = 'Sangat Memuaskan';
+            }
+
+            if (certStatus) {
+                certStatus.innerText = statusText;
+                certStatus.className = `text-xs font-bold px-2 py-1 rounded inline-block mt-1 ${statusClass}`;
+            }
+
+            if (certGrade) certGrade.innerText = gradeText;
+
+            if (certId) certId.innerText = `SIG-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            const certDateText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            if (certDate) certDate.innerText = certDateText;
+
+            const certPreviewDate = document.getElementById('cert-preview-date');
+            const certPreviewId = document.getElementById('cert-preview-id');
+            const certPreviewName = document.getElementById('cert-preview-name');
+            const certPreviewMeta = document.getElementById('cert-preview-meta');
+            const certPreviewScore = document.getElementById('cert-preview-score');
+            const certPreviewGrade = document.getElementById('cert-preview-grade');
+
+            if (certPreviewDate) certPreviewDate.innerText = certDateText;
+            if (certPreviewId) certPreviewId.innerText = certId ? certId.innerText : 'SIG-2026-0000';
+            if (certPreviewName) certPreviewName.innerText = studentData.name || 'Ahmad Rizky Siregar';
+            if (certPreviewMeta) certPreviewMeta.innerText = `Kelas: ${studentData.class || 'XI Fase F'} | ${studentData.school || 'SMA Negeri 1 Jakarta'}`;
+            if (certPreviewScore) certPreviewScore.innerText = certFinalScore ? certFinalScore.innerText : finalScoreVal;
+            if (certPreviewGrade) certPreviewGrade.innerText = certGrade ? certGrade.innerText : gradeText;
+
+            changeSlide(6);
+            playSlideEffect();
+        }
+
+        function printCertificate() {
+            window.print();
+        }
+
+        function restartAll() {
+            stopAllSoundEffects();
+            try {
+                if (soundEnabled) {
+                    slideSound.pause();
+                    slideSound.currentTime = 0;
+                    slideSound.play();
+                }
+            } catch (e) {
+                console.log('Restart sound error', e);
+            }
+            totalScore = 0;
+            gameScoreState = { pg: 0, match: 0, cat: 0 };
+            currentPgIndex = 0;
+            updateTotalGameScore();
+            renderPgQuestion({ playSound: false });
+            changeSlide(1, { playSound: false });
+            showToast('Pembelajaran Diulang Kembali');
+        }
+
+        function showToast(text, type = 'success') {
+            // Notifikasi toast dinonaktifkan agar tampilan tetap bersih.
+            return;
+        }
+
+        window.onload = function() {
+            // Pre-render initial game question
+            renderPgQuestion();
+            console.log("GeoMap SIG Explorer Initialized.");
+        };
+    </script>
+</body>
+</html>
